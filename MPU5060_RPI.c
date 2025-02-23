@@ -11,14 +11,14 @@
 #define PWR_MGMT_1   0x6B
 #define ACCEL_XOUT_H 0x3B
 
-int w_len = 2;
-int r_len = 6;
+int w_len = 2; //longitud de los datos a escribir(2 bytes)
+int r_len = 6; //longitud de los datos a leer (6 bytes)
 
 struct i2c_rdwr_ioctl_data packets;
 struct i2c_msg messages[2];
 
-uint8_t write_bytes[w_len];
-uint8_t read_bytes[r_len];
+uint8_t write_bytes[w_len]; // Buffer para los bytes a escribir
+uint8_t read_bytes[r_len]; // Buffer para los bytes a leer
 
 int main() {
     char i2cFile[15];
@@ -28,15 +28,15 @@ int main() {
 
     // Wake up the MPU6050
     write_bytes[0] = PWR_MGMT_1;
-    write_bytes[1] = 0x00;
-    messages[0].addr = MPU6050_ADDR;
-    messages[0].flags = 0;
+    write_bytes[1] = 0x00; // Escribe 0x00 en el registro para despertar el sensor
+    messages[0].addr = MPU6050_ADDR;  // Establece la dirección del mensaje
+    messages[0].flags = 0;// Flag para operación de escritura
     messages[0].len = w_len;
     messages[0].buf = write_bytes;
     
-    packets.msgs = messages;
-    packets.nmsgs = 1;
-    ioctl(fd, I2C_RDWR, &packets);
+    packets.msgs = messages; //Se mete el mensaje a la estructura de paquetes
+    packets.nmsgs = 1; //Numero de mensajes a enviar
+    ioctl(fd, I2C_RDWR, &packets); //Envia el mensaje para despertar al sensor
     
     // Request accelerometer data
     write_bytes[0] = ACCEL_XOUT_H;
@@ -46,16 +46,17 @@ int main() {
     messages[0].buf = write_bytes;
     
     messages[1].addr = MPU6050_ADDR;
-    messages[1].flags = I2C_M_RD;
+    messages[1].flags = I2C_M_RD; //Flag para operación de lectura
     messages[1].len = r_len;
     messages[1].buf = read_bytes;
     
     packets.msgs = messages;
-    packets.nmsgs = 2;
-    ioctl(fd, I2C_RDWR, &packets);
+    packets.nmsgs = 2; //Nº mensajes totales, 1 escritura y 1 lectura
+    ioctl(fd, I2C_RDWR, &packets);// Envía los mensajes para leer los datos de aceleración
     
     // Convert data
-    int16_t accel_x = (read_bytes[0] << 8) | read_bytes[1];
+	// Para ejes x, y, z
+    int16_t accel_x = (read_bytes[0] << 8) | read_bytes[1]; 
     int16_t accel_y = (read_bytes[2] << 8) | read_bytes[3];
     int16_t accel_z = (read_bytes[4] << 8) | read_bytes[5];
     
@@ -63,6 +64,6 @@ int main() {
     printf("Accel Y: %d\n", accel_y / 16384.0);
     printf("Accel Z: %d\n", accel_z / 16384.0);
     
-    close(fd);
-    return 0;
+    close(fd); //se cierra el descriptor 
+    return 0; //termina el programa
 }

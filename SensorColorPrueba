@@ -57,28 +57,28 @@ int main() {
     
     // Configurar ganancia (4x)
     i2c_write(fd, CONTROL_REG, 0x01);
-
-    // Esperar integración
-    sleep(1);
-
-    // Leer datos de color
-    if (i2c_read(fd, CDATAL_REG, data, 8) < 0) {
-        perror("Error al leer datos del sensor");
-        close(fd);
-        return 1;
+    while(1){
+        // Esperar integración
+        sleep(1);
+    
+        // Leer datos de color
+        if (i2c_read(fd, CDATAL_REG, data, 8) < 0) {
+            perror("Error al leer datos del sensor");
+            close(fd);
+            return 1;
+        }
+    
+        // Convertir datos
+        uint16_t clear = (data[1] << 8) | data[0];
+        uint16_t red   = (data[3] << 8) | data[2];
+        uint16_t green = (data[5] << 8) | data[4];
+        uint16_t blue  = (data[7] << 8) | data[6];
+    
+        printf("Clear: %d\n", clear);
+        printf("Red:   %d\n", red);
+        printf("Green: %d\n", green);
+        printf("Blue:  %d\n", blue);
     }
-
-    // Convertir datos
-    uint16_t clear = (data[1] << 8) | data[0];
-    uint16_t red   = (data[3] << 8) | data[2];
-    uint16_t green = (data[5] << 8) | data[4];
-    uint16_t blue  = (data[7] << 8) | data[6];
-
-    printf("Clear: %d\n", clear);
-    printf("Red:   %d\n", red);
-    printf("Green: %d\n", green);
-    printf("Blue:  %d\n", blue);
-
     close(fd);
     return 0;
 }

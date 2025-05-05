@@ -1,0 +1,45 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <unistd.h>
+#include <arpa/inet.h>
+
+#define PUERTO 12345
+#define TAM_BUFFER 1024
+
+int main() {
+    int sockfd;
+    struct sockaddr_in servidor, cliente;
+    char buffer[TAM_BUFFER];
+    socklen_t len = sizeof(cliente);
+
+    sockfd = socket(AF_INET, SOCK_DGRAM, 0);
+    if (sockfd < 0) {
+        perror("Error al crear socket");
+        return 1;
+    }
+
+    memset(&servidor, 0, sizeof(servidor));
+    servidor.sin_family = AF_INET;
+    servidor.sin_addr.s_addr = INADDR_ANY;
+    servidor.sin_port = htons(PUERTO);
+
+    if (bind(sockfd, (struct sockaddr *)&servidor, sizeof(servidor)) < 0) {
+        perror("Error en bind");
+        close(sockfd);
+        return 1;
+    }
+
+    printf("Servidor UDP escuchando en puerto %d...\n", PUERTO);
+
+    while (1) {
+        int n = recvfrom(sockfd, buffer, TAM_BUFFER, 0, (struct sockaddr *)&cliente, &len);
+        if (n > 0) {
+            buffer[n] = '\0';
+            printf("Mensaje recibido: %s\n", buffer);
+        }
+    }
+
+    close(sockfd);
+    return 0;
+}

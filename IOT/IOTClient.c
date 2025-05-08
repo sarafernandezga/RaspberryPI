@@ -19,13 +19,14 @@ int main() {
     socklen_t addr_len = sizeof(server_addr);
     char buffer[BUFFER_SIZE];
 
-    // Crear socket UDP
+    // Crear socket
     sockfd = socket(AF_INET, SOCK_DGRAM, 0);
     if (sockfd < 0) {
         perror("Error al crear el socket");
         exit(EXIT_FAILURE);
     }
 
+    // Detalles del servidor
     memset(&server_addr, 0, sizeof(server_addr));
     server_addr.sin_family = AF_INET;
     server_addr.sin_port = htons(SERVER_PORT);
@@ -74,7 +75,7 @@ int main() {
         }
         offset += snprintf(message + offset, BUFFER_SIZE - offset, "SENSOR_DATA_END");
 
-        // Enviar al servidor
+        // Enviar mensaje al servidor
         sendto(sockfd, message, strlen(message), 0,
                (struct sockaddr*)&server_addr, addr_len);
 

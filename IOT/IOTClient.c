@@ -5,7 +5,7 @@
 #include <unistd.h>
 #include <arpa/inet.h>
 
-#define SERVER_IP "192.168.X.Y" // Replace with your VM's IP
+#define SERVER_IP "192.168.149.237" // Replace with your VM's IP
 #define SERVER_PORT 12345
 #define BUFFER_SIZE 1024
 

@@ -16,6 +16,7 @@ typedef struct {
     int count;
 } SensorData;
 
+// Calculo de la media, maximo, minimo y desviacion estandar de los ejes de aceleracion
 void compute_stats_float(const float *data, int count, const char *label) {
     float sum = 0, max = data[0], min = data[0], mean, stddev = 0;
 
@@ -33,6 +34,7 @@ void compute_stats_float(const float *data, int count, const char *label) {
     printf("%s -> Mean: %.2f, Max: %.2f, Min: %.2f, Stddev: %.2f\n", label, mean, max, min, stddev);
 }
 
+// Calculo de la media, maximo, minimo y desviacion estandar de los valores RGB
 void compute_stats_int(const int *data, int count, const char *label) {
     int sum = 0, max = data[0], min = data[0];
     float mean, stddev = 0;
@@ -51,6 +53,7 @@ void compute_stats_int(const int *data, int count, const char *label) {
     printf("%s -> Mean: %.2f, Max: %d, Min: %d, Stddev: %.2f\n", label, mean, max, min, stddev);
 }
 
+// Extrae los valores numericos de los mensajes de texto recibidos del cliente para luego analizarlos
 void parse_sensor_data(const char *msg, SensorData *data) {
     char line[256];
     int i = 0;
@@ -96,7 +99,7 @@ int main() {
         exit(EXIT_FAILURE);
     }
 
-    // Bind
+    // Bind socket
     memset(&server_addr, 0, sizeof(server_addr));
     server_addr.sin_family = AF_INET;
     server_addr.sin_addr.s_addr = INADDR_ANY;
@@ -111,6 +114,7 @@ int main() {
     printf("Servidor UDP escuchando en el puerto %d...\n", PORT);
 
     while (1) {
+        // Esperar mensaje
         ssize_t n = recvfrom(sockfd, buffer, BUFFER_SIZE - 1, 0,
                              (struct sockaddr*)&client_addr, &addr_len);
         if (n < 0) {
@@ -121,9 +125,11 @@ int main() {
         buffer[n] = '\0'; // asegurar terminación
         printf("\n Datos recibidos del cliente:\n");
 
+        // Analiza los datos recibidos
         SensorData data = { .count = 0 };
         parse_sensor_data(buffer, &data);
 
+        // Calcula la media, maximo, minimo y desviacion estandar de los datos recibidos
         if (data.count > 0) {
             compute_stats_float(data.ax, data.count, "Accel X");
             compute_stats_float(data.ay, data.count, "Accel Y");
@@ -141,6 +147,7 @@ int main() {
                (struct sockaddr*)&client_addr, addr_len);
     }
 
+    // Cerrar socket
     close(sockfd);
     return 0;
 }

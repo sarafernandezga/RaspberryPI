@@ -119,7 +119,7 @@ int main() {
         }
 
         buffer[n] = '\0'; // asegurar terminación
-        printf("\n📥 Datos recibidos del cliente:\n");
+        printf("\n Datos recibidos del cliente:\n");
 
         SensorData data = { .count = 0 };
         parse_sensor_data(buffer, &data);

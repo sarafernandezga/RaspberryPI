@@ -20,12 +20,14 @@
 
 static int i2c_fd = -1;
 
+// Escribir en el I2C
 static int i2c_write(uint8_t addr, uint8_t reg, uint8_t value) {
     uint8_t buffer[2] = { COMMAND_BIT | reg, value };
     if (ioctl(i2c_fd, I2C_SLAVE, addr) < 0) return -1;
     return write(i2c_fd, buffer, 2);
 }
 
+// Leer del I2C
 static int i2c_read(uint8_t addr, uint8_t reg, uint8_t *data, uint8_t length) {
     uint8_t reg_buffer = COMMAND_BIT | reg;
     if (ioctl(i2c_fd, I2C_SLAVE, addr) < 0) return -1;
@@ -33,6 +35,7 @@ static int i2c_read(uint8_t addr, uint8_t reg, uint8_t *data, uint8_t length) {
     return read(i2c_fd, data, length);
 }
 
+// Inicializar los sensores
 int init_sensors() {
     i2c_fd = open("/dev/i2c-1", O_RDWR);
     if (i2c_fd < 0) {
@@ -51,6 +54,7 @@ int init_sensors() {
     return 0;
 }
 
+// Lee una muestra de acelerómetro
 int read_accel_sample(AccelData *sample) {
     uint8_t data[6];
     if (i2c_read(MPU6050_ADDR, ACCEL_XOUT_H, data, 6) < 0) return -1;
@@ -66,6 +70,7 @@ int read_accel_sample(AccelData *sample) {
     return 0;
 }
 
+// Lee una muestra del sensor de color
 int read_color_sample(ColorData *sample) {
     uint8_t data[8];
     if (i2c_read(TCS34725_ADDR, CDATAL_REG, data, 8) < 0) return -1;
@@ -84,6 +89,7 @@ int read_color_sample(ColorData *sample) {
     return 0;
 }
 
+// Cierra recursos si es necesario
 void close_sensors() {
     if (i2c_fd >= 0) close(i2c_fd);
 }

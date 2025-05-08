@@ -35,8 +35,15 @@ int main() {
 
     // 3. Wait for message
     printf("Server waiting for message...\n");
-    recvfrom(sockfd, buffer, BUFFER_SIZE, 0, (struct sockaddr*)&client_addr, &addr_len);
-    buffer[strcspn(buffer, "\n")] = '\0'; // remove newline if any
+       ssize_t n = recvfrom(sockfd, buffer, BUFFER_SIZE - 1, 0, (struct sockaddr*)&client_addr, &addr_len);  // Use BUFFER_SIZE-1 to leave room for '\0'
+       if (n < 0) {
+           perror("Receive failed");
+           close(sockfd);
+           exit(EXIT_FAILURE);
+       }
+
+    buffer[n] = '\0'; // Ensure null termination after receiving
+
     printf("Received: %s\n", buffer);
 
     // 4. Prepare reply

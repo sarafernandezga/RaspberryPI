@@ -1,44 +1,73 @@
-// IOTClient.c
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
 #include <unistd.h>
 #include <arpa/inet.h>
 
-#define SERVER_IP "192.168.149.237" // Replace with your VM's IP
-#define SERVER_PORT 12345
-#define BUFFER_SIZE 1024
+void print_usage() {
+    printf("Uso: IOTClient -h <host> -p <port> -b <buffer_size> -m <message>\n");
+    printf("  -h <host>         Dirección IP del servidor\n");
+    printf("  -p <port>         Puerto del servidor\n");
+    printf("  -b <buffer_size>  Tamaño del buffer\n");
+    printf("  -m <message>      Mensaje a enviar\n");
+}
 
-int main() {
-    int sockfd;
-    char buffer[BUFFER_SIZE];
+int main(int argc, char *argv[]) {
+    int sockfd, port = 0, buffer_size = 0;
+    char *host = NULL;
+    char *message = NULL;
+    char *buffer;
     struct sockaddr_in server_addr;
     socklen_t addr_len = sizeof(server_addr);
 
-    // 1. Create socket
-    sockfd = socket(AF_INET, SOCK_DGRAM, 0);
-    if (sockfd < 0) {
-        perror("Socket creation failed");
+    // Parsear argumentos de línea de comandos
+    for (int i = 1; i < argc; i++) {
+        if (strcmp(argv[i], "-h") == 0) {
+            host = argv[++i];
+        } else if (strcmp(argv[i], "-p") == 0) {
+            port = atoi(argv[++i]);
+        } else if (strcmp(argv[i], "-b") == 0) {
+            buffer_size = atoi(argv[++i]);
+        } else if (strcmp(argv[i], "-m") == 0) {
+            message = argv[++i];
+        }
+    }
+
+    if (!host || port == 0 || buffer_size == 0 || !message) {
+        print_usage();
+        return 1;
+    }
+
+    buffer = (char *)malloc(buffer_size);
+    if (!buffer) {
+        perror("Error al asignar memoria");
         exit(EXIT_FAILURE);
     }
 
-    // 2. Server details
+    // Crear socket
+    sockfd = socket(AF_INET, SOCK_DGRAM, 0);
+    if (sockfd < 0) {
+        perror("Socket creation failed");
+        free(buffer);
+        exit(EXIT_FAILURE);
+    }
+
+    // Configurar dirección del servidor
     memset(&server_addr, 0, sizeof(server_addr));
     server_addr.sin_family = AF_INET;
-    server_addr.sin_port = htons(SERVER_PORT);
-    inet_pton(AF_INET, SERVER_IP, &server_addr.sin_addr);
+    server_addr.sin_port = htons(port);
+    inet_pton(AF_INET, host, &server_addr.sin_addr);
 
-    // 3. Send message
-    char *message = "Hello Server";
+    // Enviar mensaje
     sendto(sockfd, message, strlen(message), 0, (struct sockaddr*)&server_addr, addr_len);
-    printf("Message sent: %s\n", message);
+    printf("Mensaje enviado: %s\n", message);
 
-    // 4. Wait for reply
-    recvfrom(sockfd, buffer, BUFFER_SIZE, 0, (struct sockaddr*)&server_addr, &addr_len);
+    // Esperar respuesta
+    recvfrom(sockfd, buffer, buffer_size, 0, (struct sockaddr*)&server_addr, &addr_len);
     buffer[strcspn(buffer, "\n")] = '\0';
-    printf("Server replied: %s\n", buffer);
+    printf("Respuesta del servidor: %s\n", buffer);
 
-    // 5. Close
     close(sockfd);
+    free(buffer);
     return 0;
 }

@@ -130,7 +130,25 @@ int main(int argc, char *argv[]) {
         printf("\nDatos recibidos del cliente:\n");
 
         data.count = 0;
-        parse_sensor_data(buffer, &data);
+        data.count = 0;
+       char *line = strtok(buffer, "\n");
+       while (line != NULL && data.count < max_samples) {
+       if (strncmp(line, "Sample", 6) == 0) {
+        float ax, ay, az;
+        int r, g, b;
+        if (sscanf(line, "Sample %*d: Accel[%f,%f,%f] Color[%d,%d,%d]",
+                   &ax, &ay, &az, &r, &g, &b) == 6) {
+            data.ax[data.count] = ax;
+            data.ay[data.count] = ay;
+            data.az[data.count] = az;
+            data.r[data.count] = r;
+            data.g[data.count] = g;
+            data.b[data.count] = b;
+            data.count++;
+        }
+    }
+    line = strtok(NULL, "\n");
+}
 
         for (int i = 0; i < data.count; i++) {
             printf("Muestra %d: Accel[%.2f, %.2f, %.2f] Color[%d, %d, %d]\n",

@@ -1,4 +1,5 @@
-// sensors.c
+// This code has been developed by Sara Fernández and Yaiza Moyons with the help of AI and the code we developed in project 2 to take measurements on the two sensors
+
 #include "sensors.h"
 #include <stdio.h>
 #include <fcntl.h>

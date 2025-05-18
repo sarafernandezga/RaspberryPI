@@ -1,4 +1,6 @@
-// sensors.h
+// This code has been developed by Sara Fernández and Yaiza Moyons with the help of AI and the code 
+// we developed in project 2 to take measurements on the two sensors
+
 #ifndef SENSORS_H
 #define SENSORS_H
 

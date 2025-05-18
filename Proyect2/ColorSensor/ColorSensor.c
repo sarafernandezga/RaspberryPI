@@ -1,3 +1,5 @@
+// This code has been developed by Sara Fernández and Yaiza Moyons with the help of AI and the operation of i2c specified in the slides of the subject
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <fcntl.h>

@@ -1,5 +1,5 @@
 LIBS= -lpthread -lm #Libraries used if needed
-SRCS= SensorColorMPU2.c
+SRCS= SensorsCombined.c
 BIN=app
 CFLAGS+= -g -O0
 OBJS=$(subst .cpp,.o,$(SRCS))

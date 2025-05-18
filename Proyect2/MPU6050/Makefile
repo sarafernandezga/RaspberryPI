@@ -1,5 +1,5 @@
 LIBS= -lpthread -lm #Libraries used if needed
-SRCS= MPU5060_RPI.c
+SRCS= MPU6050_RPI.c
 BIN=app
 CFLAGS+= -g -O0
 OBJS=$(subst .cpp,.o,$(SRCS))

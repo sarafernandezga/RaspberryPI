@@ -1,3 +1,6 @@
+// This code has been developed by Sara Fernández and Yaiza Moyons with the help of AI, the slides of the subject and based 
+// on the operation of the MPU6050 code of the subject Microprocessor-Based Systems created by Sara Fernández last semester
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <fcntl.h>

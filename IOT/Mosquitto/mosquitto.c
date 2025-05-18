@@ -1,3 +1,6 @@
+// This code has been developed by Sara Fernández and Yaiza Moyons with the help of AI and the mosquitto pub function that appears in 
+// the check connectivity section of Thingsboard
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <fcntl.h>

@@ -1,5 +1,5 @@
 LIBS= -lpthread -lm #Libraries used if needed
-SRCS= Cliente.c Sensors.c
+SRCS= IOTClient.c IOTSensors.c
 BIN=app
 CFLAGS+= -g -O0
 OBJS=$(subst .cpp,.o,$(SRCS))
